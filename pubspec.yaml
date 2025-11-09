@@ -28,3 +28,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron/static/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron/static/Orbitron-Bold.ttf
+          weight: 700
+    - family: RobotoMono
+      fonts:
+        - asset: assets/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf

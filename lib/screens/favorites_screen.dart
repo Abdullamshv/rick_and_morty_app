@@ -15,43 +15,12 @@ class FavoritesScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Favorites'),
         actions: [
-          PopupMenuButton<String>(
+          IconButton(
             icon: const Icon(Icons.sort),
-            onSelected: (value) {
-              controller.setSortBy(value);
+            tooltip: 'Sort by Name (A–Z)',
+            onPressed: () {
+              controller.setSortBy('name');
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'name',
-                child: Row(
-                  children: [
-                    Icon(Icons.sort_by_alpha),
-                    SizedBox(width: 8),
-                    Text('Sort by Name'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'status',
-                child: Row(
-                  children: [
-                    Icon(Icons.favorite),
-                    SizedBox(width: 8),
-                    Text('Sort by Status'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'species',
-                child: Row(
-                  children: [
-                    Icon(Icons.pets),
-                    SizedBox(width: 8),
-                    Text('Sort by Species'),
-                  ],
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -89,11 +58,16 @@ class FavoritesScreen extends StatelessWidget {
           );
         }
 
+        // Сортировка по имени в алфавитном порядке (A–Z)
+        final sortedFavorites = List.of(favorites)
+          ..sort(
+              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
         return ListView.builder(
-          itemCount: favorites.length,
+          itemCount: sortedFavorites.length,
           itemBuilder: (context, index) {
             return CharacterCard(
-              character: favorites[index],
+              character: sortedFavorites[index],
             );
           },
         );

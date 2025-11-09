@@ -7,7 +7,6 @@ class FavoritesController extends GetxController {
   late Box<int> _favoritesBox;
 
   final RxList<Character> favorites = <Character>[].obs;
-  final RxString sortBy = 'name'.obs; // 'name', 'status', 'species'
   final RxSet<int> favoriteIds = <int>{}.obs;
 
   @override
@@ -36,22 +35,20 @@ class FavoritesController extends GetxController {
     } else {
       await addFavorite(character);
     }
-    // Refresh favorites list if we're on favorites screen
     loadFavorites();
   }
 
   Future<void> addFavorite(Character character) async {
     await _favoritesBox.put(character.id, character.id);
     favoriteIds.add(character.id);
-    
-    // Store character in characters box for persistence
+
     try {
       final characterBox = Hive.box<Character>('characters');
       await characterBox.put(character.id, character);
     } catch (e) {
       print('Error storing character: $e');
     }
-    
+
     if (!favorites.any((c) => c.id == character.id)) {
       favorites.add(character);
       _sortFavorites();
@@ -73,7 +70,6 @@ class FavoritesController extends GetxController {
           .whereType<Character>()
           .toList();
 
-      // If not found in character box, try to load from cache
       if (favorites.isEmpty) {
         _loadFavoritesFromCache();
       } else {
@@ -102,24 +98,15 @@ class FavoritesController extends GetxController {
     }
   }
 
-  void setSortBy(String sortType) {
-    sortBy.value = sortType;
-    _sortFavorites();
-  }
-
+  /// Сортировка только по имени (A–Z, без учёта регистра)
   void _sortFavorites() {
-    switch (sortBy.value) {
-      case 'name':
-        favorites.sort((a, b) => a.name.compareTo(b.name));
-        break;
-      case 'status':
-        favorites.sort((a, b) => a.status.compareTo(b.status));
-        break;
-      case 'species':
-        favorites.sort((a, b) => a.species.compareTo(b.species));
-        break;
-    }
+    favorites.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     favorites.refresh();
   }
-}
 
+  /// Метод сохранён только для совместимости с экраном FavoritesScreen
+  void setSortBy(String sortType) {
+    _sortFavorites();
+  }
+}
